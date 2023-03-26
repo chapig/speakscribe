@@ -1,10 +1,8 @@
-import asyncio
-import functools
+# This code is licensed under the terms of the GNU Lesser General Public License v2.1
 import os
 import shutil
-from typing import Callable
 
-import openai  # very nice API to run AI models; see https://replicate.com/
+import openai
 from nicegui import ui
 from nicegui.events import UploadEventArguments
 

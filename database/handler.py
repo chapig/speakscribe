@@ -1,6 +1,5 @@
+# This code is licensed under the terms of the GNU Lesser General Public License v2.1
 import sqlite3
-
-
 class Database:
 
     def __init__(self):
@@ -50,9 +49,3 @@ class Database:
     async def get_message_by_timestamp(self, timestamp: str) -> list:
         self.cursor.execute('SELECT * FROM chat WHERE timestamp = ?', (timestamp,))
         return self.cursor.fetchone()
-
-
-# Path: database\handler.py
-# Compare this snippet from components\chat.py:
-
-db = Database()

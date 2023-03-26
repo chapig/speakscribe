@@ -1,5 +1,5 @@
-import asyncio
-import functools
+# This code is licensed under the terms of the GNU Lesser General Public License v2.1
+import asyncio, functools, os
 from typing import Callable
 
 import openai
@@ -9,7 +9,8 @@ from database import handler
 
 database_handler = handler.Database()
 
-openai.api_key = "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"
+# Get environment variables
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 async def io_bound(callback: Callable, *args: any, **kwargs: any):
