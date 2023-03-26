@@ -8,7 +8,7 @@ from nicegui.events import UploadEventArguments
 
 from components import chat
 
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 messages = []
 
@@ -19,9 +19,6 @@ ui_state = chat.UIState()
 async def index_page() -> None:
     # Chat component is in components/chat.py
     await chat.content(ui_state)
-
-
-
 
 
 async def update_animation(object, animation):
