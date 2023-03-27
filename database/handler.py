@@ -5,7 +5,7 @@ import sqlite3
 class Database:
 
     def __init__(self):
-        self.connection = sqlite3.connect('database.db')
+        self.connection = sqlite3.connect('database/database.db')
         self.cursor = self.connection.cursor()
         self.cursor.execute(
             'CREATE TABLE IF NOT EXISTS chat (id INTEGER PRIMARY KEY, input_message TEXT, message TEXT, timestamp TEXT)')
