@@ -39,12 +39,14 @@ async def get_chatbot_response(prompt):
                               top_p=1,
                               frequency_penalty=0,
                               presence_penalty=0.6,
+                              stop=["You:", "Chatbot:"]
                               )
     return response.choices[0].text
 
 
 class UIState:
     def __init__(self):
+        self.transcription = ui.button()
         self.delete_dialog = ui.dialog()
         self.loading_spinner = ui.spinner('dots', size='lg', color='white').style('display: none')
         self.text_input = ui.input(value='').classes("w-full")
@@ -61,7 +63,11 @@ class UIState:
             return
 
         with self.chat:
-            ui.label(self.text_input.value.capitalize()).classes("bg-stone-700 text-white rounded-lg p-2")
+            with ui.row().classes("bg-blue-500 text-md text-white shadow-md font-normal text-center rounded-lg p-3"):
+                ui.label(self.text_input.value.capitalize())
+                date, time = await message_timestamp()
+                ui.label(time + " " + date).classes("text-xs text-white").tooltip(
+                    f"Message received at this time.")
             self.spinner = ui.spinner('dots', size='lg', color='black').style('display: block').classes(
                 "bg-white text-white rounded-lg p-2")
 
@@ -71,20 +77,25 @@ class UIState:
             for message in messages:
                 prompt += f'{message[1]}\n{message[2]}\n'
 
-            prompt += f'You: {self.text_input.value}\n'
-            print(default_prompt + prompt)
+            prompt += f'You: {self.text_input.value}\nChatbot:'
 
             response = await get_chatbot_response(default_prompt + prompt)
-            response = response.replace('Chatbot:', '')
-            print("Chatbot: " + response)
+            response = response.replace('AI Assistant:', '').strip()
 
             await database_handler.insert_message(self.text_input.value, response, str(datetime.now()))
 
             self.text_input.value = ''
-            with ui.label(response).classes("bg-white text-black rounded-lg p-2"):
+            with ui.row().classes(
+                    "bg-white text-md text-black font-normal text-left rounded-lg p-2 shadow-lg") as self.chat_box:
+                ui.label(response).classes("text-sm text-black")
                 date, time = await message_timestamp()
-                ui.label(time + " " + date).classes("text-xs text-gray-400").tooltip(f"Message received at this time.")
+                ui.label(time + " " + date).classes("text-xs text-gray-400").tooltip(
+                    f"Message received at this time.")
+
             self.spinner.style('display: none')
+
+    async def children_chat(self):
+        self.chat.clear()
 
 
 async def notify_message_cleared():
@@ -104,32 +115,45 @@ async def content(ui_state: UIState) -> None:
         ui.button(on_click=lambda: ui_state.right_menu.toggle()).props(
             f'flat color=white icon=chat')
 
+        with ui.dialog() as ui_state.delete_dialog, ui.card().classes("p-6 shadow-none"):
+            ui.label('Clear all messages')
+            ui.label(
+                "Note that this action can't be undone and will erase the chatbot's memory, "
+                "therefore the chatbot won't be able to respond based on previous messages.").classes(
+                "text-sm text-gray-400")
+
+            with ui.row().classes("justify-end"):
+                ui.button('Cancel', on_click=ui_state.delete_dialog.close).props("color=red").classes(
+                    "capitalize")
+                ui.button('Clear', on_click=ui_state.children_chat).props("color=white").classes(
+                    "capitalize text-black").on('click',
+                                                notify_message_cleared).on('click', ui_state.delete_dialog.close)
+
         with ui.right_drawer(value=True, fixed=False, top_corner=True).style("background-color: none;").props(
-                ':width="500"').classes("") as ui_state.right_menu:
-            with ui.column().classes('bg-blue-700 shadow-2xl rounded-md p-8 text-white relative'):
-                ui.label('Chat').classes("text-lg text-white font-medium")
-                ui.label('Chat with ChatGPT.').classes(
-                    "text-white text-sm font-normal")
-
-                with ui.dialog() as ui_state.delete_dialog, ui.card().classes("p-6 shadow-none"):
-                    ui.label('Clear all messages')
+                ':width="500"').classes(
+            "bg-gray-900 shadow-2xl rounded-md p-8 text-white relative h-full") as ui_state.right_menu:
+            with ui.row().classes(
+                    "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 md:gap-4 lg:gap-6 p-5"):
+                ui.label('Chatbot Assistance').classes("text-xl text-white font-medium")
+                with ui.row():
                     ui.label(
-                        "Note that this action can't be undone and will erase the chatbot's memory, "
-                        "therefore the chatbot won't be able to respond based on previous messages.").classes(
-                        "text-sm text-gray-400")
-                    with ui.row().classes("justify-end"):
-                        ui.button('Cancel', on_click=ui_state.delete_dialog.close).props("color=red").classes(
-                            "capitalize")
-                        ui.button('Clear', on_click=ui_state.delete_dialog.close).props("color=white").classes(
-                            "capitalize text-black").on('click',
-                                                        notify_message_cleared)
-                ui.button(on_click=ui_state.delete_dialog.open).props("icon=delete color=red unelevated")
+                        'Connect with ChatGPT to chat and have personalized recommendations.').classes(
+                        "text-white text-md font-normal")
+                with ui.row():
+                    ui.button(on_click=ui_state.delete_dialog.open).props("icon=delete color=red unelevated").classes(
+                        "mb-2")
 
-                with ui.column().classes("bg-blue-600 rounded-lg w-full p-6 shadow-lg") as ui_state.chat:
-                    ui.label(
-                        "Hello, type something to start a conversation!").classes(
-                        "bg-white text-black rounded-lg p-2")
+            with ui.row().classes(
+                    "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 md:gap-4 lg:gap-6 p-5 bg-gray-800 rounded-lg") as ui_state.chat:
+                with ui.row().classes("bg-white text-md text-black font-normal text-center rounded-lg p-2 shadow-lg"):
+                    ui.label("Hello, type something to start a conversation!")
+                    date, time = await message_timestamp()
+                    ui.label(time + " " + date).classes("text-xs text-gray-400").tooltip(
+                        f"Message received at this time.")
 
-                with ui.row().classes("w-full"):
-                    ui_state.text_input = ui.input().classes("w-full block").on("keydown.enter",
-                                                                                ui_state.update_chat_row)
+            with ui.row().classes("w-full mt-4"):
+                with ui.input().classes("w-full text-black bg-black").props(
+                        'filled label-color=primary dark standout="bg-primary text-white').on("keydown.enter",
+                                                                                              ui_state.update_chat_row) as ui_state.text_input:
+                    ui.button(on_click=ui_state.update_chat_row).props(
+                        "icon=send color=white unelevated flat").classes("w-12 h-12 bg-transparent text")
