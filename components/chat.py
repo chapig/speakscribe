@@ -52,7 +52,7 @@ class UIState:
         self.text_input = ui.input(value='').classes("w-full")
         self.chat = ui.column().classes("w-full")
         self.right_menu = ui.right_drawer(value=True, fixed=False, top_corner=True).style(
-            "background-color: none;").props(
+            "background-color: transparent;").props(
             ':width="500"').classes("")
         self.icon = "icon=cancel"
         self.spinner = None
@@ -63,13 +63,15 @@ class UIState:
             return
 
         with self.chat:
-            with ui.row().classes("bg-blue-500 text-md text-white shadow-md font-normal text-center rounded-lg p-3"):
-                ui.label(self.text_input.value.capitalize())
+            with ui.row().classes("bg-blue-500 text-md text-white shadow-md font-mono text-right rounded-lg p-3"):
+                ui.markdown(content=self.text_input.value.capitalize())
                 date, time = await message_timestamp()
                 ui.label(time + " " + date).classes("text-xs text-white").tooltip(
                     f"Message received at this time.")
             self.spinner = ui.spinner('dots', size='lg', color='black').style('display: block').classes(
                 "bg-white text-white rounded-lg p-2")
+
+            self.text_input.value = ''
 
             messages = await database_handler.get_messages()
             # Format the messages
@@ -86,10 +88,11 @@ class UIState:
 
             self.text_input.value = ''
             with ui.row().classes(
-                    "bg-white text-md text-black font-normal text-left rounded-lg p-2 shadow-lg") as self.chat_box:
-                ui.label(response).classes("text-sm text-black")
+                    "bg-white text-md text-black font-mono text-left rounded-lg p-2 shadow-lg") as self.chat_box:
+                print(response)
+                ui.markdown(content=response).classes("text-sm text-black font-mono")
                 date, time = await message_timestamp()
-                ui.label(time + " " + date).classes("text-xs text-gray-400").tooltip(
+                ui.label(time + " " + date).classes("text-xs text-gray-400 font-mono").tooltip(
                     f"Message received at this time.")
 
             self.spinner.style('display: none')
@@ -108,14 +111,14 @@ async def toggle_drawer(ui_state: UIState) -> None:
 
 
 async def content(ui_state: UIState) -> None:
-    with ui.header(elevated=False).style('background-color: #1d1d1d').classes(
-            'items-center justify-between') as ui_state.header:
-        ui.label('Speakscribe').classes("text-white text-md font-medium")
+    with ui.header(elevated=False).classes(
+            'items-center justify-between bg-transparent') as ui_state.header:
+        ui.label('Speakscribe').classes("text-white text-lg font-mono ml-12")
 
         ui.button(on_click=lambda: ui_state.right_menu.toggle()).props(
             f'flat color=white icon=chat')
 
-        with ui.dialog() as ui_state.delete_dialog, ui.card().classes("p-6 shadow-none"):
+        with ui.dialog() as ui_state.delete_dialog, ui.card().classes("p-6 shadow-none font-mono"):
             ui.label('Clear all messages')
             ui.label(
                 "Note that this action can't be undone and will erase the chatbot's memory, "
@@ -129,9 +132,9 @@ async def content(ui_state: UIState) -> None:
                     "capitalize text-black").on('click',
                                                 notify_message_cleared).on('click', ui_state.delete_dialog.close)
 
-        with ui.right_drawer(value=True, fixed=False, top_corner=True).style("background-color: none;").props(
-                ':width="500"').classes(
-            "bg-gray-900 shadow-2xl rounded-md p-8 text-white relative h-full") as ui_state.right_menu:
+        with ui.right_drawer(value=True, fixed=False, top_corner=True).props(
+                ':width="500" ').classes(
+            "bg-gradient-to-r from-neutral-900 to-neutral-700 shadow-2xl rounded-md p-8 text-white font-mono relative h-full") as ui_state.right_menu:
             with ui.row().classes(
                     "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 md:gap-4 lg:gap-6 p-5"):
                 ui.label('Chatbot Assistance').classes("text-xl text-white font-medium")
@@ -144,16 +147,16 @@ async def content(ui_state: UIState) -> None:
                         "mb-2")
 
             with ui.row().classes(
-                    "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 md:gap-4 lg:gap-6 p-5 bg-gray-800 rounded-lg") as ui_state.chat:
-                with ui.row().classes("bg-white text-md text-black font-normal text-center rounded-lg p-2 shadow-lg"):
+                    "grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 md:gap-4 lg:gap-6 p-5 rounded-lg") as ui_state.chat:
+                with ui.row().classes("bg-white text-md text-black font-normal text-right rounded-lg p-2 shadow-lg"):
                     ui.label("Hello, type something to start a conversation!")
                     date, time = await message_timestamp()
                     ui.label(time + " " + date).classes("text-xs text-gray-400").tooltip(
                         f"Message received at this time.")
 
             with ui.row().classes("w-full mt-4"):
-                with ui.input().classes("w-full text-black bg-black").props(
-                        'filled label-color=primary dark standout="bg-primary text-white').on("keydown.enter",
-                                                                                              ui_state.update_chat_row) as ui_state.text_input:
+                with ui.input().classes("w-full").props(
+                        'filled borderless hide-bottom-space autogrow').on("keydown.enter",
+                                                                           ui_state.update_chat_row) as ui_state.text_input:
                     ui.button(on_click=ui_state.update_chat_row).props(
                         "icon=send color=white unelevated flat").classes("w-12 h-12 bg-transparent text")
