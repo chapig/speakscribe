@@ -24,8 +24,8 @@ api_key = "sk-openai_api_key"
 prompt = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n\n"
 ```
 
-- Install NiceGUI by running pip install nicegui.
-- Run the application by executing main.py on your machine.
+- Run `pip install -r requirements.txt` to install the required libraries.
+- Run the application by executing speakscribe.py on your machine.
 
 ## Deployment
 To deploy your NiceGUI app on a server, you will need to execute your main.py (or whichever file contains your ui.run(...)) on your cloud infrastructure. You can, for example, just install the NiceGUI python package via pip and use systemd or similar service to start the main script. In most cases, you will set the port to 80 (or 443 if you want to use HTTPS) with the ui.run command to make it easily accessible from the outside. Check [NiceGUI - Server Hosting](https://nicegui.io/documentation#server_hosting) for more information.
