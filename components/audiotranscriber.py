@@ -84,8 +84,8 @@ async def content(au: AUDIO_State) -> None:
             ui.label(
                 "Upload an audio file to transcribe it. You can either upload audio or video files.").classes(
                 "text-white text-md font-mono")
-        with ui.row().classes("ml-12 lg:w-full w-2/3"):
-            au.text_box = ui.textarea().classes("lg:w-full w-3/4 font-mono text-white bg-transparent rounded-lg").props(
+        with ui.row().classes("ml-12 lg:w-full w-11/12"):
+            au.text_box = ui.textarea().classes("lg:w-full w-11/12 font-mono text-white bg-transparent rounded-lg").props(
                 "filled borderless hide-bottom-space autogrow")
 
         with ui.row().classes("ml-12 lg:w-full w-3/4") as audio_transcription_button:

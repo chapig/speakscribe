@@ -116,7 +116,7 @@ async def content(ui_state: UIState) -> None:
         ui.label('Speakscribe').classes("text-white text-lg font-mono ml-12")
 
         ui.button(on_click=lambda: ui_state.right_menu.toggle()).props(
-            f'flat color=white icon=chat')
+            f'flat color=white icon=chat').classes("lg:mr-0 mr-8")
 
         with ui.dialog() as ui_state.delete_dialog, ui.card().classes("p-6 shadow-none font-mono"):
             ui.label('Clear all messages')
