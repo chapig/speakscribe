@@ -7,7 +7,7 @@ Speakscribe is a web application that allows users to transcribe audios using Op
 ## Requirements
 To use this web application, you will need to have the following installed on your machine:
 
-- Python 3.6 or higher
+- Python 3.9 or higher
 - NiceGUI
 - OpenAI API key
 
