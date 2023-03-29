@@ -58,9 +58,11 @@ class UIState:
         self.spinner = None
 
     async def update_chat_row(self) -> None:
-        if self.text_input.value == '':
-            self.text_input.classes('border-2 border-red-500')
+        # If input only contains whitespace, don't send message
+        if self.text_input.value.isspace():
+            self.text_input.props(add="error no-error-icon error-message='Please enter a message.'")
             return
+
 
         with self.chat:
             with ui.row().classes("bg-blue-500 text-md text-white shadow-md font-mono text-right rounded-lg p-3"):
@@ -71,26 +73,24 @@ class UIState:
             self.spinner = ui.spinner('dots', size='lg', color='black').style('display: block').classes(
                 "bg-white text-white rounded-lg p-2")
 
-            self.text_input.value = ''
-
             messages = await database_handler.get_messages()
             # Format the messages
             prompt = ''
             for message in messages:
-                prompt += f'{message[1]}\n{message[2]}\n'
+                prompt += f'{message[1]}{message[2]}'
 
-            prompt += f'You: {self.text_input.value}\nChatbot:'
+            prompt += f'You:{self.text_input.value}Chatbot:'
+            self.text_input.value = ''
 
             response = await get_chatbot_response(default_prompt + prompt)
             response = response.replace('AI Assistant:', '').strip()
 
-            await database_handler.insert_message(self.text_input.value, response, str(datetime.now()))
+            await database_handler.insert_message(self.text_input.value.strip(), response, str(datetime.now()))
 
             self.text_input.value = ''
             with ui.row().classes(
                     "bg-white text-md text-black font-mono text-left rounded-lg p-2 shadow-lg") as self.chat_box:
-                print(response)
-                ui.markdown(content=response).classes("text-sm text-black font-mono")
+                ui.markdown(content=response.strip()).classes("text-sm text-black font-mono")
                 date, time = await message_timestamp()
                 ui.label(time + " " + date).classes("text-xs text-gray-400 font-mono").tooltip(
                     f"Message received at this time.")
@@ -103,7 +103,7 @@ class UIState:
 
 async def notify_message_cleared():
     await database_handler.delete_messages()
-    ui.notify(type="positive", message="Messages cleared successfully.", position="top")
+    ui.notify(type="positive", message="Messages cleared successfully.", position="top", classes="font-mono")
 
 
 async def toggle_drawer(ui_state: UIState) -> None:
@@ -156,7 +156,6 @@ async def content(ui_state: UIState) -> None:
 
             with ui.row().classes("w-full mt-4"):
                 with ui.input().classes("w-full").props(
-                        'filled borderless hide-bottom-space autogrow').on("keydown.enter",
-                                                                           ui_state.update_chat_row) as ui_state.text_input:
+                        'filled borderless hide-bottom-space autogrow') as ui_state.text_input:
                     ui.button(on_click=ui_state.update_chat_row).props(
-                        "icon=send color=white unelevated flat").classes("w-12 h-12 bg-transparent text")
+                        "icon=send color=white unelevated flat prepend").classes("w-12 h-12 bg-transparent text")

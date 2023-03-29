@@ -15,7 +15,7 @@ async def index_page() -> None:
     await audiotranscriber.content(au_state)
 
     # Footer
-    with ui.footer().style('background-color: #3874c8'):
+    with ui.footer().classes("font-mono bg-zinc-900"):
         ui.label(
             'Copyright © 2023 Luis Chaparro. This website was built using OpenAI and NiceGUI. All rights reserved.')
 

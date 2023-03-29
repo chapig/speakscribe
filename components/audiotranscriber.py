@@ -34,6 +34,8 @@ class AUDIO_State:
         # spinner.style('display: block')
         # home_column.classes('border-2 border-gray-800')
         print("Transcribing audio...")
+
+        self.text_box.props(add="loading")
         self.upload_dialog.close()
         file_name = e.name
         with open(e.name, 'wb') as f:
@@ -51,6 +53,7 @@ class AUDIO_State:
             # Delete file
             file.close()
             os.remove(file_name)
+            self.text_box.props(remove="loading")
         #
 
 
