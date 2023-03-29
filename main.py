@@ -2,17 +2,17 @@
 
 from nicegui import ui
 
-from components import audiotranscriber
+from components import audio_transcriber
 from components import chat
 
 ui_state = chat.UIState()
-au_state = audiotranscriber.AUDIO_State()
+au_state = audio_transcriber.AUDIO_State()
 
 @ui.page('/')
 async def index_page() -> None:
     # Chat component is in components/chat.py
     await chat.content(ui_state)
-    await audiotranscriber.content(au_state)
+    await audio_transcriber.content(au_state)
 
     # Footer
     with ui.footer().classes("font-mono bg-zinc-900"):
