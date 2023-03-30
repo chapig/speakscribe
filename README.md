@@ -3,7 +3,12 @@ Speakscribe is a web application that allows users to transcribe audios using Op
 
 ![image](https://user-images.githubusercontent.com/46666572/228412224-4534eb88-2b9d-4713-ac62-3ed1d3b10788.png)
 
+## Video Demo
+https://user-images.githubusercontent.com/46666572/228912584-209266da-26b2-4c00-b33f-52a3a2c873f9.mp4
+
+
 ## Features
+
 
 - Transcribe audio or video files using Whisper by OpenAI.
 - Type any prompt in the chatbot, the chatbot will remember what you said.
