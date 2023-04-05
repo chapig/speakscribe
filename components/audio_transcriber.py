@@ -76,15 +76,15 @@ async def content(au: AUDIO_State) -> None:
 
     with ui.row().classes("absolute inset-0 max-w-md mx-auto h-80 blur-[118px] sm:h-72").style(
             "background: linear-gradient(152.92deg, rgba(192, 132, 252, 0.2) 4.54%, "
-            "rgba(232, 121, 249, 0.26) 34.2%, rgba(192, 132, 252, 0.1) 77.55%)") as index_banner:
+            "rgba(232, 121, 249, 0.26) 34.2%, rgba(192, 132, 252, 0.1) 77.55%)"):
         with ui.label() as index_title_header:
             index_title_header.text = "Speakscribe"
             index_title_header.classes("text-4xl font-bold text-white")
 
-    with ui.column() as header_column:
-        with ui.row().classes("ml-12") as audio_transcription_texts:
+    with ui.column():
+        with ui.row().classes("ml-12"):
             ui.label("Audio Transcription").classes("text-4xl font-bold text-white font-mono")
-        with ui.row().classes("ml-12 lg:w-full w-2/3") as audio_transcription_description:
+        with ui.row().classes("ml-12 lg:w-full w-2/3"):
             ui.label(
                 "Upload an audio file to transcribe it. You can either upload audio or video files.").classes(
                 "text-white text-md font-mono")
@@ -92,7 +92,7 @@ async def content(au: AUDIO_State) -> None:
             au.text_box = ui.textarea().classes("lg:w-full w-11/12 font-mono text-white bg-transparent rounded-lg").props(
                 "filled borderless hide-bottom-space autogrow")
 
-        with ui.row().classes("ml-12 lg:w-full w-3/4") as audio_transcription_button:
+        with ui.row().classes("ml-12 lg:w-full w-3/4"):
             ui.button("Upload an audio file", on_click=au.upload_dialog.open).props(
                 "icon=upload white flat unelevated xs").classes(
                 "bg-transparent border-2 rounded-lg border-white text-white font-mono")
